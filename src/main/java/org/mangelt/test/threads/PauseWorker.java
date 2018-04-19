@@ -1,6 +1,6 @@
 package org.mangelt.test.threads;
 
-public class PauseWorker {
+public class PauseWorker extends Thread{
 	
 	protected final static String[] words;
 	
@@ -11,9 +11,9 @@ public class PauseWorker {
 		words[2] = "going";
 		words[3] = " ?";
 	}
-
-//	print each word every 3 seconds
-	public static void main(String[] args) {
+	
+	@Override
+	public void run(){
 		
 		try {
 			
@@ -26,14 +26,25 @@ public class PauseWorker {
 					Thread.sleep(5000);
 				
 			}
-			
-			System.out.println("It has finished.");
-			
 		} catch (InterruptedException | RuntimeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		
+	}
+
+//	print each word every 3 seconds
+	public static void main(String[] args) {
+		
+		PauseWorker pw = new PauseWorker();
+		
+		pw.start();
+		
+		pw.join();
+		
+		System.out.println("The second thread has finished.");
+				
 	}
 	
 }
