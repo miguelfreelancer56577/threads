@@ -15,27 +15,25 @@ public class PauseWorker extends Thread{
 	@Override
 	public void run(){
 		
-		try {
-			
 			for (int i = 0; i < words.length; i++) {
 				
 	//			print current word
 				System.out.print(words[i]);
 	//			sleep during 5 seconds
 				
-					Thread.sleep(5000);
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				
 			}
-		} catch (InterruptedException | RuntimeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 		
 	}
 
 //	print each word every 3 seconds
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		
 		PauseWorker pw = new PauseWorker();
 		
@@ -43,7 +41,7 @@ public class PauseWorker extends Thread{
 		
 		pw.join();
 		
-		System.out.println("The second thread has finished.");
+		System.out.println("\nThe second thread has finished.");
 				
 	}
 	
