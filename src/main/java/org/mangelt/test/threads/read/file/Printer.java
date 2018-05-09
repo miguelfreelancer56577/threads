@@ -1,41 +1,111 @@
 package org.mangelt.test.threads.read.file;
 
-public class Printer implements Runnable {
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
-	public static String content = null;
+public class Printer{
+
+	private String content = null;
 	
-	public void run(){
-		
-		Utility.message("tring to print content.");
-		
-		while(true){
-			try {
-				Utility.message("Check every 5 seconds if there is something to print.");
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				Utility.message("There was an error to sleep this thread.");
-			}
-			
-			if(!isNull())
-				onPrint();
-				
-		}
-		
+	private File pathToDirectory;
+	
+	public Printer(File d){
+		pathToDirectory = d;
 	}
 	
-	final synchronized private boolean isNull(){
+	private synchronized String getContent() {
+		return content;
+	}
+
+	private synchronized void setContent(String content) {
+		this.content = content;
+	}
+
+	private File getPathToDirectory() {
+		return pathToDirectory;
+	}
+
+	private void setPathToDirectory(File pathToDirectory) {
+		this.pathToDirectory = pathToDirectory;
+	}
+	
+	final synchronized private boolean isContentNull(){
 		boolean result = false;
 		if(content == null)
 			return true;
 		return result;
-	} 
+	}
 	
-	public synchronized void onPrint(){
+	final synchronized private boolean isPathToDirectoryNull(){
+		boolean result = false;
+		if(content == null)
+			return true;
+		return result;
+	}
+	
+	final synchronized void getContentFromFile() throws IOException{
 		
-		Utility.message("Printing message.");
-		Utility.message(content);
-		content = null;
+		while (!isContentNull()) {
+			try {
+				Utility.message("wait until content becomes null.");
+				wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		File[] listFiles = pathToDirectory.listFiles();
+		
+		for (File file : listFiles) {
+			
+			String nameConcurrentFile = file.getName().toString();
+			
+			String extensionFile = nameConcurrentFile.substring((file.getName().length()-4),file.getName().length());
+			
+			if(extensionFile.equalsIgnoreCase(".txt")){
+				
+				Utility.message("getting file: " + file);
+				
+				setContent(new String(Files.readAllBytes(Paths.get(file.getAbsolutePath()))));
+				
+				file.delete();
+				
+				break;
+				
+			}
+				
+		}
+		
+		notifyAll();
 		
 	}
+	
+	final synchronized void toPrint(){
+		
+		while (isContentNull()) {
+			
+			try {
+				Utility.message("wait until content has something.");
+				wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		
+		Utility.message(getContent());
+		
+		setContent(null);
+		
+		notifyAll();
+		
+	}
+	
+
 	
 }

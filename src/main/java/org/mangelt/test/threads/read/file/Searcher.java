@@ -54,7 +54,11 @@ public class Searcher implements Runnable{
 			
 			if(extensionFile.equalsIgnoreCase(patternFileToSelect)){
 				
-				reader.cuncurrentFile = file;
+				Utility.message("getting file: " + file);
+				
+//				reader.cuncurrentFile = file;
+				
+				notify();
 				
 				break;
 				
